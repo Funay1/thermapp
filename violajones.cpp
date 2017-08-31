@@ -33,7 +33,7 @@
  int main( int argc, const char** argv )
  {
    VideoCapture capture = VideoCapture("out.mp4");
-   VideoCapture captureTermica = VideoCapture("termicaout.mp4");
+   VideoCapture captureTermica = VideoCapture("outtermica.mp4");
    //VideoCapture capture;
    Mat frame;
    Mat frameTermica;
@@ -73,142 +73,13 @@
    return 0;
  }
 */
-/*
- int main (){
-     //namedWindow("MyVideo");
-     Mat rotMatrix;
-     Mat rotMatrixRgb;
-     Mat rot_vec = Mat::zeros(1,3,CV_32F);
-     rot_vec.at<float>(0,0) = 0.0195;
-     rot_vec.at<float>(0,1) = 0.0371;
-     rot_vec.at<float>(0,2) = 0.0235;
-     //Rodrigues(rot_vec,rot_matrix,teste); // matrix de rotacao
-     Mat T(3,1,cv::DataType<float>::type); // vetor de translacao
-     T.at<float>(0,0) = 30.1545;
-     T.at<float>(1,0) = -22.4858;
-     T.at<float>(2,0) = 121.8940;
-     cv::Mat intrinsicParameter(3,3,cv::DataType<float>::type); // intrinsic parameter matrix
-     intrinsicParameter.at<float>(0,0) = 772.5578;
-     intrinsicParameter.at<float>(0,1) = 0;
-     intrinsicParameter.at<float>(0,2) = 238.2199;
-     intrinsicParameter.at<float>(1,0) = 0;
-     intrinsicParameter.at<float>(1,1) = 775.7107;
-     intrinsicParameter.at<float>(1,2) = 83.0067;
-     intrinsicParameter.at<float>(2,0) = 0;
-     intrinsicParameter.at<float>(2,1) = 0;
-     intrinsicParameter.at<float>(2,2) = 1;
-
-640,480
-
-     cv::Mat distCoeffs(4,1,cv::DataType<float>::type); // coeficientes de distorcao -- CONSIDERANDO SEM DISTORCAO
-     distCoeffs.at<float>(0) = 0;
-     distCoeffs.at<float>(1) = 0;
-     distCoeffs.at<float>(2) = 0;
-     distCoeffs.at<float>(3) = 0;
-
-
-     //projectPoints(objectPoints, rvecR, T, K, distCoeffs, projectedPoints);
-     Mat frametermica = imread("termica.png");
-     Mat framergb = imread("rgb.png");
-     Point RgbPoint(80+150,120);
-
-     cv::Mat RgbPointMatrix(3,1,cv::DataType<float>::type);
-     RgbPointMatrix.at<float>(0,0) = 150+80-211;
-     RgbPointMatrix.at<float>(1,0) = 120+240-150;
-     RgbPointMatrix.at<float>(2,0) = 0;
-
-
-     cv::Mat Crgb(3,1,cv::DataType<float>::type);
-     Crgb.at<float>(0,0) = 211+80+30;
-     Crgb.at<float>(1,0) = 150;
-     Crgb.at<float>(2,0) = 0;
-
-     cv::Mat translacaoCameraRgb(3,1,cv::DataType<float>::type);
-    translacaoCameraRgb.at<float>(0,0) = -16.356461;
-    translacaoCameraRgb.at<float>(1,0) = 34.683937;
-    translacaoCameraRgb.at<float>(2,0) = 214.805847;
-
-    cv::Mat rotacaoCameraRgb(1,3,cv::DataType<float>::type);
-    rotacaoCameraRgb.at<float>(0,0) = -0.080300;
-    rotacaoCameraRgb.at<float>(0,1) = -0.178932;
-    rotacaoCameraRgb.at<float>(0,2) = -1.136063;
-    Rodrigues(rotacaoCameraRgb,rotMatrixRgb);
-
-
-     float x = RgbPoint.x -211.5966;
-     float y = RgbPoint.y - 150.4523;
-     float z = 870; //870;
-     cv::Mat pontoMundoRgb(3,1,cv::DataType<float>::type);
-    pontoMundoRgb.at<float>(0,0) = x;
-    pontoMundoRgb.at<float>(1,0) = y;
-    pontoMundoRgb.at<float>(2,0) = z;
-
-    Mat pRgb = rotMatrixRgb*RgbPointMatrix + translacaoCameraRgb;
-
-    cv::Mat rotacaoCamera(1,3,cv::DataType<float>::type);
-   rotacaoCamera.at<float>(0,0) = 0.0195;
-   rotacaoCamera.at<float>(0,1) = 0.0371;
-   rotacaoCamera.at<float>(0,2) = 0.0235;
-   Rodrigues(rotacaoCamera,rotMatrix);
-
-
-   cv::Mat translacaoCamera(3,1,cv::DataType<float>::type);
-  translacaoCamera.at<float>(0,0) = 30.1545;
-  translacaoCamera.at<float>(1,0) = -22.4858;
-  translacaoCamera.at<float>(2,0) = 121.8940;
-
-
-    std::vector<cv::Point2f> projectedPoints;
-    std::vector<cv::Point2d> imagePoints;
-    vector<cv::Point3f> mundoTermica;
-    Mat pTermica = rotMatrix*pRgb + translacaoCamera;
-    //Point3d projectedPoints;
-
-
-    //cout << "aqui" << pTermica.at<float>(0,0);
-    Point3f xyzTermica(pTermica.at<float>(0,0),pTermica.at<float>(1,0),pTermica.at<float>(2,0));
-    cout << "aqu testei" << xyzTermica.z<< endl;
-    mundoTermica.push_back(xyzTermica);
-    projectPoints(mundoTermica, rot_vec, T, intrinsicParameter, distCoeffs, projectedPoints);
-
-    cout << pRgb.at<float>(0,0) << endl;
-    cout << pontoMundoRgb.at<float>(0,0) << endl;
-    cout << pRgb.at<float>(1,0) << endl;
-    cout << pontoMundoRgb.at<float>(1,0) << endl;
-    cout << pRgb.at<float>(2,0) << endl;
-    cout << pontoMundoRgb.at<float>(2,0) << endl;
-
-
-    cout << projectedPoints[0].x << endl;
-    cout << projectedPoints[0].y << endl;
-
-    projectedPoints[0].y = fabs(projectedPoints[0].y);
-    projectedPoints[0].x = fabs(projectedPoints[0].x);
-
-
-    cout << "frame rgb" <<framergb.size << endl;
-    cout << "frame termica" << frametermica.size << endl;
-
-
-    ellipse( framergb, RgbPoint, Size( 2, 2), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
-    ellipse( frametermica, projectedPoints[0], Size( 2, 2), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
-    while(waitKey(27)){
-        /*cout << framergb.size << endl;
-        cout << frametermica.size << endl;
-        imshow("RGB",framergb);
-        imshow("TERMICA",frametermica);
-    }
-    //cout << pTermica.size;
-    cout << "aqui";
-     return 0;
- }
-*/
-
 
 #include "opencv2/opencv.hpp"
 
 using namespace cv;
 using namespace std;
+ VideoCapture capture = VideoCapture("out.mp4");
+ VideoCapture captureTermica = VideoCapture("outtermica.mp4");
  Mat im_dst = imread("termica.png");
  Mat im_src = imread("rgb.png");
  Mat im_out;
@@ -411,11 +282,20 @@ cout << im_dst.size << "aqui" << endl;;
 
     // Calculate Homography
     Mat h = findHomography(pts_src, pts_dst);
-
     // Output image
     // Warp source image to destination based on homography
-    cout << h << endl;
-    warpPerspective(im_src, im_out, h, im_dst.size());
+    while(true){
+        capture >> im_src;
+        captureTermica >> im_dst;
+        if( !im_src.empty() ){
+            warpPerspective(im_src, im_out, h, im_dst.size());
+            imshow("haha",im_out);
+            waitKey(50);
+          //detectAndDisplay( im_out,im_out );
+        }
+        else
+        { printf(" --(!) No captured frame -- Break!"); break; }
+    }
     // Display images
     Point2f teste;
 //    vector<Point2f> centers; //this will be filled by the detected centers
@@ -440,12 +320,12 @@ cout << im_dst.size << "aqui" << endl;;
 //    cout << contador << endl;
 
     //ellipse( im_dst, Point(170,60)- Point(80,-190), Size( 2, 2), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
-    imshow("Source Image", im_src);
+    /*imshow("Source Image", im_src);
     setMouseCallback("Source Image", CallBackFunc, NULL);
     imshow("Destination Image", im_dst);
     imshow("Warped Source Image", im_out);
     setMouseCallback("Warped Source Image", CallBackFuncElipse, NULL);
-    waitKey(0);
+    waitKey(0);*/
 
 }
 void CallBackFuncElipse(int event, int x, int y, int flags, void* userdata)
@@ -488,7 +368,7 @@ void detectAndDisplay( Mat frame,Mat frameTermica )
     if(frame.rows < faces[i].height*0.5 + center.y || 0 > center.y - 0.5*faces[i].height)
         continue;
     ellipse( frameTermica, center, Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
-    imshow( window_name, frameTermica );
+    imshow( "window_name", frameTermica );
     return;
     Mat faceROI = frame_gray( faces[i] );
     std::vector<Rect> eyes;
