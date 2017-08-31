@@ -414,6 +414,7 @@ cout << im_dst.size << "aqui" << endl;;
 
     // Output image
     // Warp source image to destination based on homography
+    cout << h << endl;
     warpPerspective(im_src, im_out, h, im_dst.size());
     // Display images
     Point2f teste;
