@@ -1,16 +1,16 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include "cam.h"
-/*
-int main(int argc, char *argv[])
-{
-    abreCam();
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
-}
-*/
+
+//int main(int argc, char *argv[])
+//{
+//    abreCam();
+//    QApplication a(argc, argv);
+//    MainWindow w;
+//    w.show();
+//    return a.exec();
+//}
+
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/opencv.hpp"

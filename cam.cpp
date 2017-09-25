@@ -16,10 +16,11 @@ void abreCam(){
 
 Mat rotate(Mat src, double angle)
 {
+    angle = 90;
     Mat dst;
     Point2f pt(src.cols/2., src.rows/2.);
     Mat r = getRotationMatrix2D(pt, angle, 1.0);
-    warpAffine(src, dst, r, Size(src.cols, src.rows));
+    warpAffine(src, dst, r, Size(src.cols-60, src.rows+80));
     return dst;
 }
 
