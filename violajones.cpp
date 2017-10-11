@@ -10,13 +10,13 @@
  using namespace cv;
 
  /** Function Headers */
- void detectAndDisplay( Mat frame , Mat frameTermica );
+ unsigned long long int detectAndDisplay( Mat frame , Mat frameTermica );
  void CallBackFunc(int event, int x, int y, int flags, void* userdata);
  void CallBackFuncElipse(int event, int x, int y, int flags, void* userdata);
 
  /** Global variables */
- String face_cascade_name = "/home/thecakeisalai/opencv/opencv-3.0.0-alpha/data/haarcascades/haarcascade_frontalface_alt.xml";
- String eyes_cascade_name = "/home/thecakeisalai/opencv/opencv-3.0.0-alpha/data/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
+ String face_cascade_name = "/home/thecakeisalai/opencv/opencv-3.0.0-alpha/data/haarcascades/haarcascade_frontalface_alt2.xml";
+ String eyes_cascade_name = "/home/thecakeisalai/opencv/opencv-3.0.0-alpha/data/haarcascades/frontalEyes35x16.xml";
  String nose_cascade_name = "/home/thecakeisalai/opencv/opencv-3.0.0-alpha/data/haarcascades/haarcascade_mcs_nose.xml";
  String mouth_cascade_name = "/home/thecakeisalai/opencv/opencv-3.0.0-alpha/data/haarcascades/haarcascade_mcs_mouth.xml";
  String teste_name = "/home/thecakeisalai/opencv/opencv-3.0.0-alpha/data/haarcascades/haarcascade_frontalface_alt.xml";
@@ -29,11 +29,12 @@
  RNG rng(12345);
  Point pt[4];
  /** @function main */
-
+unsigned long long int achou = 0;
+unsigned long long int numberFrames = 0;
  int main( int argc, const char** argv )
  {
-   VideoCapture capture = VideoCapture("/home/thecakeisalai/Videos/Brekel_01_11_2016_08_18_47_Color.avi");
-   VideoCapture captureTermica = VideoCapture("outtermica.mp4");
+   VideoCapture capture = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens\ matheus/MatheusRgbCortada.mp4");
+   //VideoCapture captureTermica = VideoCapture("outtermica.mp4");
    //VideoCapture capture;
    Mat frame;
    Mat frameTermica;
@@ -50,15 +51,16 @@
      {
          //waitKey(100);
         capture >> frame;
-        captureTermica >> frameTermica;
-        imshow("antes",frame);
+        //captureTermica >> frameTermica;
 
         //frame = imread("/home/thecakeisalai/Desktop/index.jpg");
 
    //-- 3. Apply the classifier to the frame
        if( !frame.empty() ){
-        detectAndDisplay( frame,frame );
+           numberFrames++;
+        achou = achou + detectAndDisplay( frame,frame );
         waitKey(10);
+        cout << "% de deteccao" << (double)achou/numberFrames << endl;
         continue;
        }
        else
@@ -72,7 +74,9 @@
         else {
             cout << "AQUI";
         }*/
+
       }
+     while(true){}
    return 0;
  }
 
@@ -359,8 +363,20 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
      }
 }
 /** @function detectAndDisplay */
-void detectAndDisplay( Mat frame,Mat frameTermica )
+
+int pegaMaior(std::vector<Rect>object){
+    int indice = 0;
+    if(object.size() > 1){ // pega maior face
+        for(size_t i=0;i< object.size(); i++)
+            if(object[i].width > object[indice].width){ indice = i;}
+    }
+    return indice;
+}
+
+unsigned long long int detectAndDisplay( Mat frame,Mat frameTermica )
 {
+  if(frame.empty() == true || frameTermica.empty() == true)
+      return 0;
   std::vector<Rect> faces;
   Mat frame_gray;
 
@@ -372,82 +388,104 @@ void detectAndDisplay( Mat frame,Mat frameTermica )
 
   if(face_cascade.empty() == true){
       printf("aqui\n");
-      return;
+      return 0;
   }
 
 
-  for( size_t i = 0; i < faces.size(); i++ ) // procura em cada rosto
+  for( size_t i = 0; i < faces.size() && i < 1 ; i++ ) // procura em cada rosto
   {
-
+    size_t eye_number;
+    if(faces.empty()) return 0;
+    i = pegaMaior(faces);
     Point center( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5 );
     if(frame.rows < faces[i].height*0.5 + center.y || 0 > center.y - 0.5*faces[i].height)
         continue;
-    ellipse( frame, center, Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
+    //ellipse( frame, center, Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
     //return;
+
     Mat faceROI = frame_gray( faces[i] );
     std::vector<Rect> eyes;
-
-    //-- In each face, detect eyes
+    //-- In each face, dete ct eyes
     eyes_cascade.detectMultiScale( faceROI, eyes, 1.1, 2, 0,  Size(5,5));
     if(eyes_cascade.empty() == true) {
         imshow( "window_name", frame );
         cout << "nao achou o olho" << endl;
-        return;
+        return 0;
     }
-    cout << eyes.size() << endl;
-    for( size_t j = 0; j < eyes.size() && j < 2; j++ )
+    //cout << eyes.size() << endl;
+    for( size_t j = 0; j < eyes.size() && j < 1; j++ )
     {
-        cout << "OLHO AQUI" << endl;
+       eye_number = j;
        Point centerEye( faces[i].x + eyes[j].x + eyes[j].width*0.5, faces[i].y + eyes[j].y + eyes[j].height*0.5 );
        int radiusEye = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
-       ellipse( frame,centerEye, Size(eyes[j].width*0.4, eyes[j].height*0.25),0,0,360,Scalar( 255, 255, 255 ), 2, 16, 0);
+       //ellipse( frame,centerEye, Size(eyes[j].width*0.4, eyes[j].height*0.25),0,0,360,Scalar( 255, 255, 255 ), 2, 16, 0);
     }
 
     //-- In each face, detect nose
     std::vector<Rect> nose;
-    nose_cascade.detectMultiScale(faceROI,nose,1.1,2,0,Size(30,30));
+    cv::Mat faceROI1 = cv::Mat(faceROI, cv::Rect(0,0,0.8*faceROI.rows,faceROI.cols));
+    nose_cascade.detectMultiScale(faceROI1,nose,1.1,2,0,Size(30,30));
     int nose_y;
     if(nose_cascade.empty() == true){
         cout << "não achou o nariz" << endl;
         imshow( "window_name", frame );
     }
-    for( size_t j = 0; j < nose.size(); j++ )
+    size_t nose_number;
+    for( size_t j = 0; j < nose.size() && j < 1; j++ )
     {
+       j = pegaMaior(nose);
+       nose_number = j;
        Point centerNose( faces[i].x + nose[j].x + nose[j].width*0.5, faces[i].y + nose[j].y + nose[j].height*0.4 );
 
        if(centerNose.y + nose[j].height*0.35> frame.rows || 0 > centerNose.y - 0.35*nose[j].height) continue;
 
-       ellipse( frame,centerNose, Size(nose[j].width*0.35, nose[j].height*0.35),0,0,360,Scalar( 255, 255, 0 ), 2, 16, 0);
+       ellipse( frame,centerNose, Size(nose[j].width*0.3, nose[j].height*0.35),0,0,360,Scalar( 255, 255, 0 ), 2, 16, 0);
        nose_y = nose[j].y;
     }
+//    std::vector<Rect> mouth;
+//    mouth_cascade.detectMultiScale(faceROI,mouth,1.1,2,0,Size(30,30));
+//    if(mouth_cascade.empty() == true){
+//        cout << "não achou a boca " << endl;
+//        imshow( "window_name", frame );
+//    }
+//    bool achou = true;
+//    for( size_t j = 0; j <= mouth.size() && achou; j++ )
+//    {
 
-    std::vector<Rect> mouth;
-    mouth_cascade.detectMultiScale(faceROI,mouth,1.1,2,0,Size(5,5));
-    if(mouth_cascade.empty() == true){
-        cout << "não achou a boca " << endl;
-        imshow( "window_name", frame );
-    }
-    for( size_t j = 0; j <= mouth.size(); j++ )
-     {
+//       if(nose_y > mouth[j].y)
+//           continue;
+//       achou = false;
+//       //cout << "aqui" << endl;
+//       Point centerMouth( faces[i].x + mouth[j].x + mouth[j].width*0.5, faces[i].y + mouth[j].y + mouth[j].height*0.5 );
+//      // int radiusMouth = cvRound( (mouth[j].width + mouth[j].height)*0.25 );
+//       //circle( frame, centerMouth, radiusMouth, Scalar( 255, 0, 0 ), 4, 8, 0 );
 
-       if(nose_y > mouth[j].y)
-           continue;
-       //cout << "aqui" << endl;
-       Point centerMouth( faces[i].x + mouth[j].x + mouth[j].width*0.5, faces[i].y + mouth[j].y + mouth[j].height*0.5 );
-      // int radiusMouth = cvRound( (mouth[j].width + mouth[j].height)*0.25 );
-       //circle( frame, centerMouth, radiusMouth, Scalar( 255, 0, 0 ), 4, 8, 0 );
+//       if(centerMouth.y + mouth[j].height*0.25> frame.rows || 0 > centerMouth.y - 0.25*mouth[j].height) continue;
 
-       if(centerMouth.y + mouth[j].height*0.25> frame.rows || 0 > centerMouth.y - 0.25*mouth[j].height) continue;
-
-       ellipse( frame,centerMouth, Size(mouth[j].width*0.4, mouth[j].height*0.25),0,0,360,Scalar( 255, 0, 0 ), 2, 16, 0);
-     }
+//       ellipse( frame,centerMouth, Size(mouth[j].width*0.4, mouth[j].height*0.25),0,0,360,Scalar( 255, 0, 0 ), 2, 16, 0);
+//     }
 
     // in each face, detect cheek
-    /*Point centerCheekR( faces[i].x + faces[i].width*0.75, faces[i].y + nose[i].y + nose[i].height*0.5  );
-    ellipse( frame,centerCheekR, Size((faces[i].width - nose[i].width)*0.25*0.7, (faces[i].width - nose[i].width)*0.25*0.7),0,0,360,Scalar( 0, 0, 0 ), 2, 16, 0);
-    Point centerCheekL( faces[i].x + faces[i].width*0.25, faces[i].y + nose[i].y + nose[i].height*0.5  );
-    ellipse( frame,centerCheekL, Size((faces[i].width - nose[i].width)*0.25*0.7, (faces[i].width - nose[i].width)*0.25*0.7),0,0,360,Scalar( 0, 0, 0 ), 2, 16, 0);
-*/
+    if(eyes.empty()) return 0;
+    if(nose.empty()) return 0;
+    if(faces[i].y + eyes[eye_number].y + eyes[eye_number].height*0.5 > faces[i].y + nose[nose_number].y + nose[nose_number].height*0.4  ) return 0;
+    float p = abs(0.5*(0.5*eyes[eye_number].width - nose[nose_number].width)) ;
+    //cout << p << endl;
+    Point centerCheekR( faces[i].x + nose[nose_number].x + nose[nose_number].width +p, faces[i].y + nose[nose_number].y + nose[nose_number].height*0.5 );
+    Point centerCheekL( faces[i].x + nose[nose_number].x -p, faces[i].y + nose[nose_number].y + nose[nose_number].height*0.5 );
+    ellipse( frame,centerCheekR, Size(0.8*(nose[nose_number].width*0.35), nose[nose_number].height*0.35),0,0,360,Scalar( 0, 0, 0 ), 2, 16, 0);
+    //Point centerCheekL( faces[i].x + faces[i].width*0.45 - nose[nose_number].width*0.5, faces[i].y + nose[nose_number].y + nose[nose_number].height*0.5  );
+    ellipse( frame,centerCheekL, Size(0.8*(nose[nose_number].width*0.35), nose[nose_number].height*0.35),0,0,360,Scalar( 0, 0, 0 ), 2, 16, 0);
+
+
+
+    Point forHeadLeft(faces[i].x + eyes[eye_number].x + eyes[eye_number].width*0.35, faces[i].y + 0.8*eyes[eye_number].y);
+    ellipse( frame,forHeadLeft,Size(eyes[eye_number].width*0.2, eyes[eye_number].height*0.25),0,0,360,Scalar( 125, 125, 0 ), 2, 16, 0);
+
+    Point forHeadRight(faces[i].x + eyes[eye_number].x + eyes[eye_number].width*0.80, faces[i].y + 0.8*eyes[eye_number].y);
+    ellipse( frame,forHeadRight, Size(eyes[eye_number].width*0.2, eyes[eye_number].height*0.25),0,0,360,Scalar( 125, 125, 0 ), 2, 16, 0);
+
+
 //    int x[1];
 //    x[0] = 1;
     // in each face, detect forhead
@@ -464,4 +502,5 @@ void detectAndDisplay( Mat frame,Mat frameTermica )
   }
   //-- Show what you got
   imshow( window_name, frame );
+  return 1;
  }

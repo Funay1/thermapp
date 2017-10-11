@@ -96,13 +96,13 @@ void MainWindow::getMinMax(pair *minmax, signed short *arr, int n)
 
   for (i = 2; i<n; i++)
   {
-      if(arr[i] < 180){
+     /* if(arr[i] < 180){
           teste++;
           continue;}
       if(arr[i] > 350){
           continue;
           teste++;
-      }
+      }*/
       mid += arr[i];
     if (arr[i] >  minmax->max)
       minmax->max = arr[i];
