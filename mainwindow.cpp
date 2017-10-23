@@ -72,6 +72,7 @@ void MainWindow::getMinMax(pair *minmax, signed short *arr, int n)
   //If there is only one element then return it as min and max both
   if (n == 1)
   {
+     //std::cout << "aqui" << std::endl;
      minmax->max = arr[0];
      minmax->min = arr[0];
      return;
@@ -192,7 +193,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
+using namespace std;
 ///FIXME: This method transfers RAW data from ThermApp to QPixmap
 QPixmap MainWindow::Frame(short *frame){
 
@@ -202,25 +203,21 @@ QPixmap MainWindow::Frame(short *frame){
 
 
   short frame_trans[PIXELS_DATA_SIZE];
-
+  short frame1[PIXELS_DATA_SIZE];
+   // median(frame1,frame);
    for(i = 0; i < PIXELS_DATA_SIZE; i++){
-       frame_trans[i] = ((frame[i] - image_cal[i]) * gainCal) + offsetCal;
+       frame1[i] = ((frame[i] - image_cal[i]) * gainCal) + offsetCal;
    }
-   FILE *pFile = fopen ("myfile.txt","w");
-   for(i=0;i<PIXELS_DATA_SIZE;i++){
-       fprintf (pFile, "%d ",frame[i]/10);
-         frame[i] = frame[i]/10;
-   }
-   fclose(pFile);
 
-//  median(frame1,frame);
-  getMinMax(&min_max, frame, PIXELS_DATA_SIZE);
+  median(frame1,frame_trans);
+  getMinMax(&min_max, frame1, PIXELS_DATA_SIZE);
 
   //fprintf(stderr, "min = %d, mid = %d max = %d\n",min_max.min,min_max.mid,min_max.max);
 
   //ctmf(frame,frame,384,288,1,1,3,1,512*1024);
   ui->labelDinamic->setText(QString("Dynamic range: %1").arg(sqrt((min_max.max - min_max.min) * (min_max.max - min_max.min))));
   ui->minmaxlabel->setText(QString("max: %1, min: %2").arg(min_max.max).arg(min_max.min));
+  std::cout << min_max.max << "," << min_max.min << std::endl;
 
   // Mostrar Imagem de acordo com a imagem base  //
 
@@ -230,7 +227,7 @@ QPixmap MainWindow::Frame(short *frame){
         pix_lim = frame_trans[i];
         if((pix_lim > 255) && (tmp == 0)){
             tmp = 1;
-            qDebug() << "overflow > " << i << pix_lim;
+            //qDebug() << "overflow > " << i << pix_lim;
             //int agc = ui->gainCalSlider->value();
             //agc -= 50;
             //ui->gainCalSlider->setValue(agc);
@@ -240,7 +237,7 @@ QPixmap MainWindow::Frame(short *frame){
         if((pix_lim < 0) && (tmp0 == 0)){
             tmp0 = 1;
             //int agc = ui->offsetCalSlider->value();
-            qDebug() << "overflow < "<< i << pix_lim;
+           // qDebug() << "overflow < "<< i << pix_lim;
             //agc += sqrt(min_max.min * min_max.min);
             //ui->offsetCalSlider->setValue(agc);
         }
@@ -376,7 +373,7 @@ void MainWindow::on_getCalibButton_pressed()
 
     for(int i = 0; i < PIXELS_DATA_SIZE; i++){
         d_frame[i] = frame[i];
-        //fprintf(stderr, " %f",(frame[i] - 14336) * 0.00652);
+        fprintf(stderr, " %f",(frame[i] - 14336) * 0.00652);
     }
 
     for(int i = 0; i < 50; i++){

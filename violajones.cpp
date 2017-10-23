@@ -40,118 +40,118 @@
  /** @function main */
 unsigned long long int achou = 0;
 unsigned long long int numberFrames = 0;
- int main( int argc, const char** argv )
- {
-   VideoCapture capture = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens matheus/MatheusRgb.mp4");
-   VideoCapture captureTermica = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens matheus/MatheusTermica.mp4");
-   //VideoCapture capture;
+// int main( int argc, const char** argv )
+// {
+//   VideoCapture capture = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens matheus/MatheusRgb.mp4");
+//   VideoCapture captureTermica = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens matheus/MatheusTermica.mp4");
+//   //VideoCapture capture;
 
-   Mat frame;
-   Mat frameTermica;
-   Mat frame_rotacionado;
-   vector<Point2f> pts_src;
-   pts_src.push_back(Point2f(420, 101));
-   pts_src.push_back(Point2f(419, 189));
-   pts_src.push_back(Point2f(418, 273));
-   pts_src.push_back(Point2f(418, 361));
-   pts_src.push_back(Point2f(421, 448));
-   pts_src.push_back(Point2f(423, 533));
-   pts_src.push_back(Point2f(337, 532));
-   pts_src.push_back(Point2f(334, 445));
-   pts_src.push_back(Point2f(334, 358));
-   pts_src.push_back(Point2f(336, 275));
-   pts_src.push_back(Point2f(335, 186));
-   pts_src.push_back(Point2f(334, 104));
-   pts_src.push_back(Point2f(252, 103));
-   pts_src.push_back(Point2f(251, 188));
-   pts_src.push_back(Point2f(251, 271));
-   pts_src.push_back(Point2f(250, 360));
-   pts_src.push_back(Point2f(251, 444));
-   pts_src.push_back(Point2f(252, 531));
-   pts_src.push_back(Point2f(165, 532));
-   pts_src.push_back(Point2f(164, 449));
-   pts_src.push_back(Point2f(165, 357));
-   pts_src.push_back(Point2f(166, 275));
-   pts_src.push_back(Point2f(167, 187));
-   pts_src.push_back(Point2f(168, 105));
+//   Mat frame;
+//   Mat frameTermica;
+//   Mat frame_rotacionado;
+//   vector<Point2f> pts_src;
+//   pts_src.push_back(Point2f(420, 101));
+//   pts_src.push_back(Point2f(419, 189));
+//   pts_src.push_back(Point2f(418, 273));
+//   pts_src.push_back(Point2f(418, 361));
+//   pts_src.push_back(Point2f(421, 448));
+//   pts_src.push_back(Point2f(423, 533));
+//   pts_src.push_back(Point2f(337, 532));
+//   pts_src.push_back(Point2f(334, 445));
+//   pts_src.push_back(Point2f(334, 358));
+//   pts_src.push_back(Point2f(336, 275));
+//   pts_src.push_back(Point2f(335, 186));
+//   pts_src.push_back(Point2f(334, 104));
+//   pts_src.push_back(Point2f(252, 103));
+//   pts_src.push_back(Point2f(251, 188));
+//   pts_src.push_back(Point2f(251, 271));
+//   pts_src.push_back(Point2f(250, 360));
+//   pts_src.push_back(Point2f(251, 444));
+//   pts_src.push_back(Point2f(252, 531));
+//   pts_src.push_back(Point2f(165, 532));
+//   pts_src.push_back(Point2f(164, 449));
+//   pts_src.push_back(Point2f(165, 357));
+//   pts_src.push_back(Point2f(166, 275));
+//   pts_src.push_back(Point2f(167, 187));
+//   pts_src.push_back(Point2f(168, 105));
 
-   vector<Point2f> pts_dst;
-   pts_dst.push_back(Point2f(394+60,138+ 228));
-   pts_dst.push_back(Point2f(404+60,138+ 312));
-   pts_dst.push_back(Point2f(414+60,138+ 398));
-   pts_dst.push_back(Point2f(424+60,138+ 483));
-   pts_dst.push_back(Point2f(432+60,138+ 572));
-   pts_dst.push_back(Point2f(437+60,138+ 646));
-   pts_dst.push_back(Point2f(354+60,138+ 660));
-   pts_dst.push_back(Point2f(345+60,138+ 579));
-   pts_dst.push_back(Point2f(339+60,138+ 496));
-   pts_dst.push_back(Point2f(330+60,138+ 405));
-   pts_dst.push_back(Point2f(318+60,138+ 319));
-   pts_dst.push_back(Point2f(308+60,138+ 242));
-   pts_dst.push_back(Point2f(227+60,138+ 255));
-   pts_dst.push_back(Point2f(236+60,138+ 333));
-   pts_dst.push_back(Point2f(247+60,138+ 416));
-   pts_dst.push_back(Point2f(256+60,138+ 498));
-   pts_dst.push_back(Point2f(264+60,138+ 590));
-   pts_dst.push_back(Point2f(274+60,138+ 659));
-   pts_dst.push_back(Point2f(195+60,138+ 661));
-   pts_dst.push_back(Point2f(183+60,138+ 591));
-   pts_dst.push_back(Point2f(175+60,138+ 512));
-   pts_dst.push_back(Point2f(163+60,138+ 426));
-   pts_dst.push_back(Point2f(156+60,138+ 348));
-   pts_dst.push_back(Point2f(151+60,138+ 264));
+//   vector<Point2f> pts_dst;
+//   pts_dst.push_back(Point2f(394+60,138+ 228));
+//   pts_dst.push_back(Point2f(404+60,138+ 312));
+//   pts_dst.push_back(Point2f(414+60,138+ 398));
+//   pts_dst.push_back(Point2f(424+60,138+ 483));
+//   pts_dst.push_back(Point2f(432+60,138+ 572));
+//   pts_dst.push_back(Point2f(437+60,138+ 646));
+//   pts_dst.push_back(Point2f(354+60,138+ 660));
+//   pts_dst.push_back(Point2f(345+60,138+ 579));
+//   pts_dst.push_back(Point2f(339+60,138+ 496));
+//   pts_dst.push_back(Point2f(330+60,138+ 405));
+//   pts_dst.push_back(Point2f(318+60,138+ 319));
+//   pts_dst.push_back(Point2f(308+60,138+ 242));
+//   pts_dst.push_back(Point2f(227+60,138+ 255));
+//   pts_dst.push_back(Point2f(236+60,138+ 333));
+//   pts_dst.push_back(Point2f(247+60,138+ 416));
+//   pts_dst.push_back(Point2f(256+60,138+ 498));
+//   pts_dst.push_back(Point2f(264+60,138+ 590));
+//   pts_dst.push_back(Point2f(274+60,138+ 659));
+//   pts_dst.push_back(Point2f(195+60,138+ 661));
+//   pts_dst.push_back(Point2f(183+60,138+ 591));
+//   pts_dst.push_back(Point2f(175+60,138+ 512));
+//   pts_dst.push_back(Point2f(163+60,138+ 426));
+//   pts_dst.push_back(Point2f(156+60,138+ 348));
+//   pts_dst.push_back(Point2f(151+60,138+ 264));
 
-   Mat h = findHomography(pts_src, pts_dst);
+//   Mat h = findHomography(pts_src, pts_dst);
 
-   //-- 1. Load the cascades
-   if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face\n"); return -1; };
-   if( !eyes_cascade.load( eyes_cascade_name ) ){ printf("--(!)Error loading eye\n"); return -1; };
-   if( !nose_cascade.load( nose_cascade_name ) ){ printf("--(!)Error loading nose\n"); return -1; };
-   if( !mouth_cascade.load( mouth_cascade_name ) ){ printf("--(!)Error loading mouth\n"); return -1; };
-   if( !teste.load( teste_name ) ){ printf("--(!)Error loading teste\n"); return -1; };
-   //-- 2. Read the video stream
-    //capture.open(0);
-   Mat frameTermica1;
-    //namedWindow("MyVideo");
-     while(true)
-     {
-         //waitKey(100);
-        capture >> frame;
+//   //-- 1. Load the cascades
+//   if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face\n"); return -1; };
+//   if( !eyes_cascade.load( eyes_cascade_name ) ){ printf("--(!)Error loading eye\n"); return -1; };
+//   if( !nose_cascade.load( nose_cascade_name ) ){ printf("--(!)Error loading nose\n"); return -1; };
+//   if( !mouth_cascade.load( mouth_cascade_name ) ){ printf("--(!)Error loading mouth\n"); return -1; };
+//   if( !teste.load( teste_name ) ){ printf("--(!)Error loading teste\n"); return -1; };
+//   //-- 2. Read the video stream
+//    //capture.open(0);
+//   Mat frameTermica1;
+//    //namedWindow("MyVideo");
+//     while(true)
+//     {
+//         //waitKey(100);
+//        capture >> frame;
 
-        captureTermica >> frameTermica;
+//        captureTermica >> frameTermica;
 
-        //captureTermica >> frameTermica;
-       // cout << frame.size << endl;
+//        //captureTermica >> frameTermica;
+//       // cout << frame.size << endl;
 
-        //frame = imread("/home/thecakeisalai/Desktop/index.jpg");
+//        //frame = imread("/home/thecakeisalai/Desktop/index.jpg");
 
-   //-- 3. Apply the classifier to the frame
-       if( !frame.empty() ){
-           numberFrames++;
-        warpPerspective(frame, frame_rotacionado, h, frameTermica.size());
-        frame = rotate1(frame_rotacionado,-360);
-        achou = achou + detectAndDisplay( frame_rotacionado,frameTermica );
-        waitKey(10);
-        cout << "% de deteccao" << (double)achou/numberFrames << endl;
-        cout << achou << endl;
-        continue;
-       }
-       else
-       { printf(" --(!) No captured frame -- Break!"); break; }
-       int c = waitKey(10);
-       /*if( (char)c == 'c' ) { break; }
-        if(!frame.empty()){
-            cout << "teste 1" << endl;
-            //imshow("MyVideo", frame);
-        }
-        else {
-            cout << "AQUI";
-        }*/
+//   //-- 3. Apply the classifier to the frame
+//       if( !frame.empty() ){
+//           numberFrames++;
+//        warpPerspective(frame, frame_rotacionado, h, frameTermica.size());
+//        frame = rotate1(frame_rotacionado,-360);
+//        achou = achou + detectAndDisplay( frame_rotacionado,frameTermica );
+//        waitKey(10);
+//        cout << "% de deteccao" << (double)achou/numberFrames << endl;
+//        cout << achou << endl;
+//        continue;
+//       }
+//       else
+//       { printf(" --(!) No captured frame -- Break!"); break; }
+//       int c = waitKey(10);
+//       /*if( (char)c == 'c' ) { break; }
+//        if(!frame.empty()){
+//            cout << "teste 1" << endl;
+//            //imshow("MyVideo", frame);
+//        }
+//        else {
+//            cout << "AQUI";
+//        }*/
 
-      }
-     while(true){}
-   return 0;
- }
+//      }
+//     while(true){}
+//   return 0;
+// }
 
 
 
