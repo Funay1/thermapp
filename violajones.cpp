@@ -28,16 +28,81 @@
  string window_name = "Capture - Face detection";
  RNG rng(12345);
  Point pt[4];
+ Mat rotate1(Mat src, double angle)
+ {
+     //angle = 90;
+     Mat dst;
+     Point2f pt(src.cols/2., src.rows/2.);
+     Mat r = getRotationMatrix2D(pt, angle, 1.0);
+     warpAffine(src, dst, r, Size(src.cols-60, src.rows+80));
+     return dst;
+ }
  /** @function main */
 unsigned long long int achou = 0;
 unsigned long long int numberFrames = 0;
  int main( int argc, const char** argv )
  {
-   VideoCapture capture = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens\ matheus/MatheusRgbCortada.mp4");
-   //VideoCapture captureTermica = VideoCapture("outtermica.mp4");
+   VideoCapture capture = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens matheus/MatheusRgb.mp4");
+   VideoCapture captureTermica = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens matheus/MatheusTermica.mp4");
    //VideoCapture capture;
+
    Mat frame;
    Mat frameTermica;
+   Mat frame_rotacionado;
+   vector<Point2f> pts_src;
+   pts_src.push_back(Point2f(420, 101));
+   pts_src.push_back(Point2f(419, 189));
+   pts_src.push_back(Point2f(418, 273));
+   pts_src.push_back(Point2f(418, 361));
+   pts_src.push_back(Point2f(421, 448));
+   pts_src.push_back(Point2f(423, 533));
+   pts_src.push_back(Point2f(337, 532));
+   pts_src.push_back(Point2f(334, 445));
+   pts_src.push_back(Point2f(334, 358));
+   pts_src.push_back(Point2f(336, 275));
+   pts_src.push_back(Point2f(335, 186));
+   pts_src.push_back(Point2f(334, 104));
+   pts_src.push_back(Point2f(252, 103));
+   pts_src.push_back(Point2f(251, 188));
+   pts_src.push_back(Point2f(251, 271));
+   pts_src.push_back(Point2f(250, 360));
+   pts_src.push_back(Point2f(251, 444));
+   pts_src.push_back(Point2f(252, 531));
+   pts_src.push_back(Point2f(165, 532));
+   pts_src.push_back(Point2f(164, 449));
+   pts_src.push_back(Point2f(165, 357));
+   pts_src.push_back(Point2f(166, 275));
+   pts_src.push_back(Point2f(167, 187));
+   pts_src.push_back(Point2f(168, 105));
+
+   vector<Point2f> pts_dst;
+   pts_dst.push_back(Point2f(394+60,138+ 228));
+   pts_dst.push_back(Point2f(404+60,138+ 312));
+   pts_dst.push_back(Point2f(414+60,138+ 398));
+   pts_dst.push_back(Point2f(424+60,138+ 483));
+   pts_dst.push_back(Point2f(432+60,138+ 572));
+   pts_dst.push_back(Point2f(437+60,138+ 646));
+   pts_dst.push_back(Point2f(354+60,138+ 660));
+   pts_dst.push_back(Point2f(345+60,138+ 579));
+   pts_dst.push_back(Point2f(339+60,138+ 496));
+   pts_dst.push_back(Point2f(330+60,138+ 405));
+   pts_dst.push_back(Point2f(318+60,138+ 319));
+   pts_dst.push_back(Point2f(308+60,138+ 242));
+   pts_dst.push_back(Point2f(227+60,138+ 255));
+   pts_dst.push_back(Point2f(236+60,138+ 333));
+   pts_dst.push_back(Point2f(247+60,138+ 416));
+   pts_dst.push_back(Point2f(256+60,138+ 498));
+   pts_dst.push_back(Point2f(264+60,138+ 590));
+   pts_dst.push_back(Point2f(274+60,138+ 659));
+   pts_dst.push_back(Point2f(195+60,138+ 661));
+   pts_dst.push_back(Point2f(183+60,138+ 591));
+   pts_dst.push_back(Point2f(175+60,138+ 512));
+   pts_dst.push_back(Point2f(163+60,138+ 426));
+   pts_dst.push_back(Point2f(156+60,138+ 348));
+   pts_dst.push_back(Point2f(151+60,138+ 264));
+
+   Mat h = findHomography(pts_src, pts_dst);
+
    //-- 1. Load the cascades
    if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face\n"); return -1; };
    if( !eyes_cascade.load( eyes_cascade_name ) ){ printf("--(!)Error loading eye\n"); return -1; };
@@ -46,21 +111,29 @@ unsigned long long int numberFrames = 0;
    if( !teste.load( teste_name ) ){ printf("--(!)Error loading teste\n"); return -1; };
    //-- 2. Read the video stream
     //capture.open(0);
+   Mat frameTermica1;
     //namedWindow("MyVideo");
      while(true)
      {
          //waitKey(100);
         capture >> frame;
+
+        captureTermica >> frameTermica;
+
         //captureTermica >> frameTermica;
+       // cout << frame.size << endl;
 
         //frame = imread("/home/thecakeisalai/Desktop/index.jpg");
 
    //-- 3. Apply the classifier to the frame
        if( !frame.empty() ){
            numberFrames++;
-        achou = achou + detectAndDisplay( frame,frame );
+        warpPerspective(frame, frame_rotacionado, h, frameTermica.size());
+        frame = rotate1(frame_rotacionado,-360);
+        achou = achou + detectAndDisplay( frame_rotacionado,frameTermica );
         waitKey(10);
         cout << "% de deteccao" << (double)achou/numberFrames << endl;
+        cout << achou << endl;
         continue;
        }
        else
@@ -83,223 +156,95 @@ unsigned long long int numberFrames = 0;
 
 
 
- // ----- CODE TO ROTATE IMAGE
- // ----- AND FIND HOMOGRAPHY MATRIX
+//  ----- CODE TO ROTATE IMAGE
+//  ----- AND FIND HOMOGRAPHY MATRIX
 
-//#include "opencv2/opencv.hpp"
+#include "opencv2/opencv.hpp"
 
-//using namespace cv;
-//using namespace std;
-// VideoCapture capture = VideoCapture("out.mp4");
-// VideoCapture captureTermica = VideoCapture("outtermica.mp4");
-// Mat im_dst = imread("termicaTeste.png");
-// Mat im_src = imread("rgbTeste.png");
-// Mat im_out;
+using namespace cv;
+using namespace std;
+ VideoCapture capture = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens\ matheus/MatheusRgbCortada.mp4");
+ VideoCapture captureTermica = VideoCapture("/home/thecakeisalai/Desktop/thermapp/ThermAppCam/build-thermapp-Desktop_Qt_5_8_0_GCC_64bit-Debug/imagens\ matheus/MatheusTermicaCortada.mp4");
+ Mat im_dst = imread("/home/thecakeisalai/Pictures/calibracoes/calibracao 30cm/1termica.png");
+ Mat im_src = imread("/home/thecakeisalai/Pictures/calibracoes/calibracao 30cm/1rgb.png");
+ Mat im_out;
 
 
 //int main( int argc, char** argv)
 //{
+//    //captureTermica >> im_src;
+//    //capture >> im_dst;
 //    // Read source image.
 //    cout << "oi" << endl;
 //    cout << im_src.size << "aqui" << endl;;
 //    // Four corners of the book in source image
 //    vector<Point2f> pts_src;
-//    pts_src.push_back(Point2f(220, 248));
-//    pts_src.push_back(Point2f(218, 285));
-//    pts_src.push_back(Point2f(214, 323));
-//    pts_src.push_back(Point2f(211, 361));
-//    pts_src.push_back(Point2f(207, 399));
-//    pts_src.push_back(Point2f(479, 267));
-//    pts_src.push_back(Point2f(477, 304));
-//    pts_src.push_back(Point2f(474, 343));
-//    pts_src.push_back(Point2f(473, 380));
-//    pts_src.push_back(Point2f(472, 417));
-//    pts_src.push_back(Point2f(334, 258));
-//    pts_src.push_back(Point2f(330, 293));
-//    pts_src.push_back(Point2f(328, 331));
-//    pts_src.push_back(Point2f(326, 371));
-//    pts_src.push_back(Point2f(323, 408));
-//    pts_src.push_back(Point2f(225, 195));
-//    pts_src.push_back(Point2f(222, 225));
-//    pts_src.push_back(Point2f(220, 255));
-//    pts_src.push_back(Point2f(217, 289));
-//    pts_src.push_back(Point2f(214, 323));
-//    pts_src.push_back(Point2f(454, 214));
-//    pts_src.push_back(Point2f(457, 244));
-//    pts_src.push_back(Point2f(460, 275));
-//    pts_src.push_back(Point2f(460, 307));
-//    pts_src.push_back(Point2f(464, 342));
-//    pts_src.push_back(Point2f(324, 203));
-//    pts_src.push_back(Point2f(324, 233));
-//    pts_src.push_back(Point2f(324, 266));
-//    pts_src.push_back(Point2f(323, 298));
-//    pts_src.push_back(Point2f(323, 332));
-//    pts_src.push_back(Point2f(221, 268));
-//    pts_src.push_back(Point2f(218, 307));
-//    pts_src.push_back(Point2f(213, 343));
-//    pts_src.push_back(Point2f(209, 378));
-//    pts_src.push_back(Point2f(207, 414));
-//    pts_src.push_back(Point2f(505, 290));
-//    pts_src.push_back(Point2f(495, 325));
-//    pts_src.push_back(Point2f(488, 359));
-//    pts_src.push_back(Point2f(481, 394));
-//    pts_src.push_back(Point2f(474, 428));
-//    pts_src.push_back(Point2f(346, 277));
-//    pts_src.push_back(Point2f(340, 315));
-//    pts_src.push_back(Point2f(334, 351));
-//    pts_src.push_back(Point2f(330, 386));
-//    pts_src.push_back(Point2f(324, 421));
-//    pts_src.push_back(Point2f(221, 248));
-//    pts_src.push_back(Point2f(217, 284));
-//    pts_src.push_back(Point2f(214, 324));
-//    pts_src.push_back(Point2f(211, 362));
-//    pts_src.push_back(Point2f(206, 401));
-//    pts_src.push_back(Point2f(478, 269));
-//    pts_src.push_back(Point2f(476, 304));
-//    pts_src.push_back(Point2f(474, 341));
-//    pts_src.push_back(Point2f(471, 379));
-//    pts_src.push_back(Point2f(470, 417));
-//    pts_src.push_back(Point2f(333, 257));
-//    pts_src.push_back(Point2f(330, 295));
-//    pts_src.push_back(Point2f(327, 333));
-//    pts_src.push_back(Point2f(325, 370));
-//    pts_src.push_back(Point2f(322, 408));
-//    pts_src.push_back(Point2f(145, 234));
-//    pts_src.push_back(Point2f(156, 271));
-//    pts_src.push_back(Point2f(163, 309));
-//    pts_src.push_back(Point2f(172, 345));
-//    pts_src.push_back(Point2f(181, 382));
-//    pts_src.push_back(Point2f(401, 172));
-//    pts_src.push_back(Point2f(410, 208));
-//    pts_src.push_back(Point2f(420, 244));
-//    pts_src.push_back(Point2f(430, 281));
-//    pts_src.push_back(Point2f(440, 315));
-//    pts_src.push_back(Point2f(258, 208));
-//    pts_src.push_back(Point2f(268, 242));
-//    pts_src.push_back(Point2f(276, 280));
-//    pts_src.push_back(Point2f(284, 317));
-//    pts_src.push_back(Point2f(295, 355));
-//    pts_src.push_back(Point2f(251, 187));
-//    pts_src.push_back(Point2f(239, 224));
-//    pts_src.push_back(Point2f(226, 259));
-//    pts_src.push_back(Point2f(215, 296));
-//    pts_src.push_back(Point2f(202, 333));
-//    pts_src.push_back(Point2f(500, 267));
-//    pts_src.push_back(Point2f(490, 302));
-//    pts_src.push_back(Point2f(479, 335));
-//    pts_src.push_back(Point2f(469, 373));
-//    pts_src.push_back(Point2f(459, 411));
-//    pts_src.push_back(Point2f(359, 222));
-//    pts_src.push_back(Point2f(348, 255));
-//    pts_src.push_back(Point2f(337, 292));
-//    pts_src.push_back(Point2f(325, 328));
-//    pts_src.push_back(Point2f(314, 368));
+//    pts_src.push_back(Point2f(420, 101));
+//    pts_src.push_back(Point2f(419, 189));
+//    pts_src.push_back(Point2f(418, 273));
+//    pts_src.push_back(Point2f(418, 361));
+//    pts_src.push_back(Point2f(421, 448));
+//    pts_src.push_back(Point2f(423, 533));
+//    pts_src.push_back(Point2f(337, 532));
+//    pts_src.push_back(Point2f(334, 445));
+//    pts_src.push_back(Point2f(334, 358));
+//    pts_src.push_back(Point2f(336, 275));
+//    pts_src.push_back(Point2f(335, 186));
+//    pts_src.push_back(Point2f(334, 104));
+//    pts_src.push_back(Point2f(252, 103));
+//    pts_src.push_back(Point2f(251, 188));
+//    pts_src.push_back(Point2f(251, 271));
+//    pts_src.push_back(Point2f(250, 360));
+//    pts_src.push_back(Point2f(251, 444));
+//    pts_src.push_back(Point2f(252, 531));
+//    pts_src.push_back(Point2f(165, 532));
+//    pts_src.push_back(Point2f(164, 449));
+//    pts_src.push_back(Point2f(165, 357));
+//    pts_src.push_back(Point2f(166, 275));
+//    pts_src.push_back(Point2f(167, 187));
+//    pts_src.push_back(Point2f(168, 105));
 
 
 //    // Read destination image.
 //cout << im_dst.size << "aqui" << endl;;
 //    // Four corners of the book in destination image.
 //    vector<Point2f> pts_dst;
-//    pts_dst.push_back(Point2f(98, 435));
-//    pts_dst.push_back(Point2f(97, 472));
-//    pts_dst.push_back(Point2f(95, 508));
-//    pts_dst.push_back(Point2f(93, 546));
-//    pts_dst.push_back(Point2f(93, 583));
-//    pts_dst.push_back(Point2f(352, 448));
-//    pts_dst.push_back(Point2f(351, 484));
-//    pts_dst.push_back(Point2f(350, 519));
-//    pts_dst.push_back(Point2f(350, 555));
-//    pts_dst.push_back(Point2f(347, 593));
-//    pts_dst.push_back(Point2f(211, 443));
-//    pts_dst.push_back(Point2f(209, 480));
-//    pts_dst.push_back(Point2f(206, 515));
-//    pts_dst.push_back(Point2f(206, 553));
-//    pts_dst.push_back(Point2f(205, 588));
-//    pts_dst.push_back(Point2f(102, 384));
-//    pts_dst.push_back(Point2f(102, 411));
-//    pts_dst.push_back(Point2f(98, 444));
-//    pts_dst.push_back(Point2f(97, 477));
-//    pts_dst.push_back(Point2f(95, 508));
-//    pts_dst.push_back(Point2f(331, 398));
-//    pts_dst.push_back(Point2f(332, 424));
-//    pts_dst.push_back(Point2f(336, 455));
-//    pts_dst.push_back(Point2f(336, 487));
-//    pts_dst.push_back(Point2f(341, 518));
-//    pts_dst.push_back(Point2f(202, 391));
-//    pts_dst.push_back(Point2f(202, 418));
-//    pts_dst.push_back(Point2f(201, 447));
-//    pts_dst.push_back(Point2f(201, 479));
-//    pts_dst.push_back(Point2f(203, 515));
-//    pts_dst.push_back(Point2f(96, 456));
-//    pts_dst.push_back(Point2f(94, 491));
-//    pts_dst.push_back(Point2f(94, 528));
-//    pts_dst.push_back(Point2f(92, 565));
-//    pts_dst.push_back(Point2f(90, 597));
-//    pts_dst.push_back(Point2f(376, 469));
-//    pts_dst.push_back(Point2f(370, 502));
-//    pts_dst.push_back(Point2f(363, 538));
-//    pts_dst.push_back(Point2f(356, 568));
-//    pts_dst.push_back(Point2f(349, 601));
-//    pts_dst.push_back(Point2f(220, 461));
-//    pts_dst.push_back(Point2f(217, 497));
-//    pts_dst.push_back(Point2f(213, 535));
-//    pts_dst.push_back(Point2f(209, 567));
-//    pts_dst.push_back(Point2f(206, 597));
-//    pts_dst.push_back(Point2f(98, 435));
-//    pts_dst.push_back(Point2f(95, 473));
-//    pts_dst.push_back(Point2f(94, 509));
-//    pts_dst.push_back(Point2f(92, 548));
-//    pts_dst.push_back(Point2f(90, 583));
-//    pts_dst.push_back(Point2f(352, 449));
-//    pts_dst.push_back(Point2f(351, 484));
-//    pts_dst.push_back(Point2f(350, 521));
-//    pts_dst.push_back(Point2f(349, 556));
-//    pts_dst.push_back(Point2f(347, 590));
-//    pts_dst.push_back(Point2f(210, 441));
-//    pts_dst.push_back(Point2f(206, 476));
-//    pts_dst.push_back(Point2f(205, 516));
-//    pts_dst.push_back(Point2f(205, 553));
-//    pts_dst.push_back(Point2f(202, 589));
-//    pts_dst.push_back(Point2f(28, 424));
-//    pts_dst.push_back(Point2f(37, 459));
-//    pts_dst.push_back(Point2f(49, 495));
-//    pts_dst.push_back(Point2f(58, 532));
-//    pts_dst.push_back(Point2f(68, 566));
-//    pts_dst.push_back(Point2f(277, 355));
-//    pts_dst.push_back(Point2f(288, 392));
-//    pts_dst.push_back(Point2f(296, 428));
-//    pts_dst.push_back(Point2f(307, 461));
-//    pts_dst.push_back(Point2f(318, 497));
-//    pts_dst.push_back(Point2f(136, 393));
-//    pts_dst.push_back(Point2f(145, 433));
-//    pts_dst.push_back(Point2f(155, 465));
-//    pts_dst.push_back(Point2f(164, 503));
-//    pts_dst.push_back(Point2f(174, 539));
-//    pts_dst.push_back(Point2f(130, 371));
-//    pts_dst.push_back(Point2f(119, 405));
-//    pts_dst.push_back(Point2f(107, 442));
-//    pts_dst.push_back(Point2f(95, 480));
-//    pts_dst.push_back(Point2f(85, 514));
-//    pts_dst.push_back(Point2f(377, 447));
-//    pts_dst.push_back(Point2f(365, 480));
-//    pts_dst.push_back(Point2f(358, 515));
-//    pts_dst.push_back(Point2f(347, 552));
-//    pts_dst.push_back(Point2f(336, 584));
-//    pts_dst.push_back(Point2f(237, 403));
-//    pts_dst.push_back(Point2f(227, 437));
-//    pts_dst.push_back(Point2f(216, 475));
-//    pts_dst.push_back(Point2f(205, 510));
-//    pts_dst.push_back(Point2f(195, 547));
+//    pts_dst.push_back(Point2f(394, 228));
+//    pts_dst.push_back(Point2f(404, 312));
+//    pts_dst.push_back(Point2f(414, 398));
+//    pts_dst.push_back(Point2f(424, 483));
+//    pts_dst.push_back(Point2f(432, 572));
+//    pts_dst.push_back(Point2f(437, 646));
+//    pts_dst.push_back(Point2f(354, 660));
+//    pts_dst.push_back(Point2f(345, 579));
+//    pts_dst.push_back(Point2f(339, 496));
+//    pts_dst.push_back(Point2f(330, 405));
+//    pts_dst.push_back(Point2f(318, 319));
+//    pts_dst.push_back(Point2f(308, 242));
+//    pts_dst.push_back(Point2f(227, 255));
+//    pts_dst.push_back(Point2f(236, 333));
+//    pts_dst.push_back(Point2f(247, 416));
+//    pts_dst.push_back(Point2f(256, 498));
+//    pts_dst.push_back(Point2f(264, 590));
+//    pts_dst.push_back(Point2f(274, 659));
+//    pts_dst.push_back(Point2f(195, 661));
+//    pts_dst.push_back(Point2f(183, 591));
+//    pts_dst.push_back(Point2f(175, 512));
+//    pts_dst.push_back(Point2f(163, 426));
+//    pts_dst.push_back(Point2f(156, 348));
+//    pts_dst.push_back(Point2f(151, 264));
 
 
 //    // Calculate Homography
 //    Mat h = findHomography(pts_src, pts_dst);
+//    cout << h << endl;
 //    // Output image
 //    // Warp source image to destination based on homography
 //    /*while(true){
 //        capture >> im_src;
 //        captureTermica >> im_dst;
 //        if( !im_src.empty() ){*/
+//         //im_src = rotate1(im_src,90);
 //            warpPerspective(im_src, im_out, h, im_dst.size());
 //            //imshow("haha",im_out);
 //            waitKey(50);
@@ -336,7 +281,7 @@ unsigned long long int numberFrames = 0;
 //    Mat rot_mat = getRotationMatrix2D(src_center, -90, 1.0);
 //    Mat dst;
 //    warpAffine(im_src, dst, rot_mat, im_src.size());
-//    imshow("Source Image", dst);
+//    imshow("Source Image", im_src);
 //    setMouseCallback("Source Image", CallBackFunc, NULL);
 //    imshow("Destination Image", im_dst);
 //    imshow("Warped Source Image", im_out);
@@ -344,16 +289,16 @@ unsigned long long int numberFrames = 0;
 //    waitKey(0);
 
 //}
-//void CallBackFuncElipse(int event, int x, int y, int flags, void* userdata)
-//{
-//     if  ( event == EVENT_LBUTTONDOWN )
-//     {
-//         ellipse( im_out, Point(x, y), Size( 2, 2), 0, 0, 360, Scalar( x, y, (x+y)%255 ), 4, 8, 0 );
-//         ellipse( im_dst, Point(x, y), Size( 2, 2), 0, 0, 360, Scalar( x, y, (x+y)%255 ), 4, 8, 0 );
-//         imshow("Destination Image", im_dst);
-//         imshow("Warped Source Image", im_out);
-//     }
-//}
+void CallBackFuncElipse(int event, int x, int y, int flags, void* userdata)
+{
+     if  ( event == EVENT_LBUTTONDOWN )
+     {
+         ellipse( im_out, Point(x, y), Size( 2, 2), 0, 0, 360, Scalar( x, y, (x+y)%255 ), 4, 8, 0 );
+         ellipse( im_dst, Point(x, y), Size( 2, 2), 0, 0, 360, Scalar( x, y, (x+y)%255 ), 4, 8, 0 );
+         imshow("Destination Image", im_dst);
+         imshow("Warped Source Image", im_out);
+     }
+}
 
 void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 {
@@ -375,6 +320,9 @@ int pegaMaior(std::vector<Rect>object){
 
 unsigned long long int detectAndDisplay( Mat frame,Mat frameTermica )
 {
+
+  Mat ROI(frameTermica.rows, frameTermica.cols, CV_8UC1, Scalar(0,0,0));
+  Mat frameTermicaB1 = frameTermica.clone();
   if(frame.empty() == true || frameTermica.empty() == true)
       return 0;
   std::vector<Rect> faces;
@@ -399,10 +347,12 @@ unsigned long long int detectAndDisplay( Mat frame,Mat frameTermica )
     i = pegaMaior(faces);
     Point center( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5 );
     if(frame.rows < faces[i].height*0.5 + center.y || 0 > center.y - 0.5*faces[i].height)
-        continue;
-    //ellipse( frame, center, Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
+        return 0;
+    //ellipse( frameTermica, center, Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
+    //ellipse( ROI, center, Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar( 255, 0, 255 ), -4, 8, 0 );
+    //imshow("teste",ROI);
     //return;
-
+    cout << "aqui galera" << endl;
     Mat faceROI = frame_gray( faces[i] );
     std::vector<Rect> eyes;
     //-- In each face, dete ct eyes
@@ -418,7 +368,17 @@ unsigned long long int detectAndDisplay( Mat frame,Mat frameTermica )
        eye_number = j;
        Point centerEye( faces[i].x + eyes[j].x + eyes[j].width*0.5, faces[i].y + eyes[j].y + eyes[j].height*0.5 );
        int radiusEye = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
-       //ellipse( frame,centerEye, Size(eyes[j].width*0.4, eyes[j].height*0.25),0,0,360,Scalar( 255, 255, 255 ), 2, 16, 0);
+       Point centerEyeLeft( faces[i].x + eyes[j].x + eyes[j].width*0.25 , faces[i].y + eyes[j].y + eyes[j].height*0.5 );
+       Point centerEyeRight( faces[i].x + eyes[j].x + eyes[j].width*0.75, faces[i].y + eyes[j].y + eyes[j].height*0.5 );
+
+
+
+       ellipse( frameTermicaB1,centerEyeLeft, Size(eyes[j].width*0.4*0.33, eyes[j].height*0.25),0,0,360,Scalar( 255, 255, 255 ), -2, 0.5, 0);
+       ellipse( frameTermicaB1,centerEyeRight, Size(eyes[j].width*0.4*0.33, eyes[j].height*0.25),0,0,360,Scalar( 255, 255, 255 ), -2, LINE_AA, 0);
+
+       ellipse( ROI,centerEyeLeft, Size(eyes[j].width*0.4*0.33, eyes[j].height*0.25),0,0,360,Scalar( 255, 255, 255 ), -2, 16, 0);
+       ellipse( ROI,centerEyeRight, Size(eyes[j].width*0.4*0.33, eyes[j].height*0.25),0,0,360,Scalar( 255, 255, 255 ), -2, 16, 0);
+
     }
 
     //-- In each face, detect nose
@@ -431,17 +391,24 @@ unsigned long long int detectAndDisplay( Mat frame,Mat frameTermica )
         imshow( "window_name", frame );
     }
     size_t nose_number;
+    int entrou_nose = 0;
     for( size_t j = 0; j < nose.size() && j < 1; j++ )
     {
        j = pegaMaior(nose);
        nose_number = j;
-       Point centerNose( faces[i].x + nose[j].x + nose[j].width*0.5, faces[i].y + nose[j].y + nose[j].height*0.4 );
+       Point centerNose( faces[i].x + nose[j].x + nose[j].width*0.5, faces[i].y + nose[j].y + nose[j].height*0.4);
 
        if(centerNose.y + nose[j].height*0.35> frame.rows || 0 > centerNose.y - 0.35*nose[j].height) continue;
 
-       ellipse( frame,centerNose, Size(nose[j].width*0.3, nose[j].height*0.35),0,0,360,Scalar( 255, 255, 0 ), 2, 16, 0);
+       ellipse( ROI,centerNose, Size(nose[j].width*0.3*0.8, nose[j].height*0.35*0.8),0,0,360,Scalar( 255, 255, 0 ), -2, 16, 0);
+       ellipse( frameTermicaB1,centerNose, Size(nose[j].width*0.3*0.8, nose[j].height*0.35*0.8),0,0,360,Scalar( 255, 255, 0 ), -2, 16, 0);
+
+
+
        nose_y = nose[j].y;
+       entrou_nose = 1;
     }
+    if(entrou_nose == 0) return 0;
 //    std::vector<Rect> mouth;
 //    mouth_cascade.detectMultiScale(faceROI,mouth,1.1,2,0,Size(30,30));
 //    if(mouth_cascade.empty() == true){
@@ -471,19 +438,25 @@ unsigned long long int detectAndDisplay( Mat frame,Mat frameTermica )
     if(faces[i].y + eyes[eye_number].y + eyes[eye_number].height*0.5 > faces[i].y + nose[nose_number].y + nose[nose_number].height*0.4  ) return 0;
     float p = abs(0.5*(0.5*eyes[eye_number].width - nose[nose_number].width)) ;
     //cout << p << endl;
-    Point centerCheekR( faces[i].x + nose[nose_number].x + nose[nose_number].width +p, faces[i].y + nose[nose_number].y + nose[nose_number].height*0.5 );
-    Point centerCheekL( faces[i].x + nose[nose_number].x -p, faces[i].y + nose[nose_number].y + nose[nose_number].height*0.5 );
-    ellipse( frame,centerCheekR, Size(0.8*(nose[nose_number].width*0.35), nose[nose_number].height*0.35),0,0,360,Scalar( 0, 0, 0 ), 2, 16, 0);
+    Point centerCheekR( faces[i].x + nose[nose_number].x + nose[nose_number].width +p+7.5, faces[i].y + nose[nose_number].y + nose[nose_number].height*0.5 );
+    Point centerCheekL( faces[i].x + nose[nose_number].x -p-7.5, faces[i].y + nose[nose_number].y + nose[nose_number].height*0.5 );
+    ellipse( ROI,centerCheekR, Size(0.8*(nose[nose_number].width*0.35), nose[nose_number].height*0.35),0,0,360,Scalar( 255, 0, 255 ), -2, 16, 0);
+    ellipse( frameTermicaB1,centerCheekR, Size(0.8*(nose[nose_number].width*0.35), nose[nose_number].height*0.35),0,0,360,Scalar( 255, 0, 255 ), -2, 16, 0);
+
+
     //Point centerCheekL( faces[i].x + faces[i].width*0.45 - nose[nose_number].width*0.5, faces[i].y + nose[nose_number].y + nose[nose_number].height*0.5  );
-    ellipse( frame,centerCheekL, Size(0.8*(nose[nose_number].width*0.35), nose[nose_number].height*0.35),0,0,360,Scalar( 0, 0, 0 ), 2, 16, 0);
+    ellipse( ROI,centerCheekL, Size(0.8*(nose[nose_number].width*0.35), nose[nose_number].height*0.35),0,0,360,Scalar( 255, 0, 255 ), -2, 16, 0);
+    ellipse( frameTermicaB1,centerCheekL, Size(0.8*(nose[nose_number].width*0.35), nose[nose_number].height*0.35),0,0,360,Scalar( 255, 0, 255 ), -2, 16, 0);
 
 
 
-    Point forHeadLeft(faces[i].x + eyes[eye_number].x + eyes[eye_number].width*0.35, faces[i].y + 0.8*eyes[eye_number].y);
-    ellipse( frame,forHeadLeft,Size(eyes[eye_number].width*0.2, eyes[eye_number].height*0.25),0,0,360,Scalar( 125, 125, 0 ), 2, 16, 0);
+    Point forHeadLeft(faces[i].x + eyes[eye_number].x + eyes[eye_number].width*0.25, faces[i].y + 0.8*eyes[eye_number].y);
+    ellipse( ROI,forHeadLeft,Size(eyes[eye_number].width*0.2, eyes[eye_number].height*0.25),0,0,360,Scalar( 255, 255, 255 ), -2, 16, 0);
+    ellipse( frameTermicaB1,forHeadLeft,Size(eyes[eye_number].width*0.2, eyes[eye_number].height*0.25),0,0,360,Scalar( 255, 255, 255 ), -2, 16, 0);
 
     Point forHeadRight(faces[i].x + eyes[eye_number].x + eyes[eye_number].width*0.80, faces[i].y + 0.8*eyes[eye_number].y);
-    ellipse( frame,forHeadRight, Size(eyes[eye_number].width*0.2, eyes[eye_number].height*0.25),0,0,360,Scalar( 125, 125, 0 ), 2, 16, 0);
+    ellipse( ROI,forHeadRight, Size(eyes[eye_number].width*0.2, eyes[eye_number].height*0.25),0,0,360,Scalar( 255, 255, 255 ), -2, 16, 0);
+    ellipse( frameTermicaB1,forHeadRight, Size(eyes[eye_number].width*0.2, eyes[eye_number].height*0.25),0,0,360,Scalar( 255, 255, 255 ), -2, 16, 0);
 
 
 //    int x[1];
@@ -500,7 +473,21 @@ unsigned long long int detectAndDisplay( Mat frame,Mat frameTermica )
 
 
   }
+
   //-- Show what you got
+//  Mat res;
+//  if(!frameTermica.empty()){
+//  bitwise_and(frameTermica,ROI,res);
+//  imshow("teste",res);
   imshow( window_name, frame );
+  imshow( "Termica",frameTermicaB1);
+  if(faces.size() < 1) return 0;
+   // Mat res;
+
+    Mat res = frameTermica.clone();
+        //imshow("teste",ROI);
+    res.setTo( Scalar( 0, 0, 0 ), ~ROI);
+    imshow("ROI",res);
+    cout << ROI.size << frameTermica.size << res.size<<  endl;
   return 1;
  }
