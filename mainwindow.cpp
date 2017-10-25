@@ -278,14 +278,24 @@ QPixmap MainWindow::Frame(short *frame){
     );
     return pixmap.transformed(QTransform().rotate(-90).scale(-2, 2));
 }
+char * currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
 
+    return buf;
+}
 
 void saveThermalImage(QPixmap pixmap){
     static unsigned long long int imageNumber = 0;
     time_t rawtime;
     time(&rawtime);
     //sprintf (buffer, "imagens/%s%d.png","img",imageNumber++);
-    sprintf (buffer, "imagens/termica/%s%d.png",ctime(&rawtime),imageNumber++);
+    sprintf (buffer, "imagens/termica/%s%d.png",currentDateTime(),imageNumber++);
     QFile file(buffer);
     file.open(QIODevice::WriteOnly);
     pixmap.save(&file,"PNG");

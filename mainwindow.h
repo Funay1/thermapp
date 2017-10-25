@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include "thermapp.h"
 
+
+char * currentDateTime();
 namespace Ui {
 class MainWindow;
 }
