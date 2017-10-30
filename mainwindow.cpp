@@ -289,6 +289,14 @@ char * currentDateTime() {
 
     return buf;
 }
+void* saveQimage(void *ptr){
+    QPixmap *p = (QPixmap*)ptr;
+    QFile file(buffer);
+    file.open(QIODevice::WriteOnly);
+    p->save(&file,"PNG");
+    file.close();
+
+}
 
 void saveThermalImage(QPixmap pixmap){
     static unsigned long long int imageNumber = 0;
@@ -296,10 +304,10 @@ void saveThermalImage(QPixmap pixmap){
     time(&rawtime);
     //sprintf (buffer, "imagens/%s%d.png","img",imageNumber++);
     sprintf (buffer, "imagens/termica/%s%d.png",currentDateTime(),imageNumber++);
-    QFile file(buffer);
-    file.open(QIODevice::WriteOnly);
-    pixmap.save(&file,"PNG");
-    file.close();
+    pthread_t tid;
+    void *status;
+    pthread_create(&tid, NULL, saveQimage, &pixmap);
+    pthread_join(tid, &status);
 }
 
 
